@@ -1,4 +1,5 @@
 import os
+import time
 from os import listdir, makedirs, system, rmdir
 import torch
 import torch.nn as nn
@@ -44,6 +45,8 @@ def train(net, writer, batch=48, train_seq_num = 10, test_seq_num = 10, total_it
             mesh_dataset_train = data_loader.Mesh_Dataset(mesh_path_root, train_seq_num, frame_num)
             training_data = DataLoader(mesh_dataset_train, batch_size = batch, shuffle = True, num_workers = 2)
             for constraint, dynamic_f, reference_f, adj_matrix, stiffness, mass, output_f in training_data:
+                # numpy.savetxt('./adj_matrix.csv',adj_matrix[1].detach().numpy(),fmt='%d',delimiter=',')
+                #adj_matrix = adj_matrix[:,:,:8]
                 output_pred = net(constraint[0,:], dynamic_f, reference_f, adj_matrix[0,:,:], stiffness, mass)
                 if(torch.cuda.is_available()):
                     output_f = output_f.cuda()
@@ -71,7 +74,11 @@ def train(net, writer, batch=48, train_seq_num = 10, test_seq_num = 10, total_it
             mesh_dataset_test = data_loader.Mesh_Dataset(mesh_path_root, test_seq_num, frame_num)
             test_data = DataLoader(mesh_dataset_test, batch_size = 12, shuffle = True, num_workers = 2)
             for constraint, dynamic_f, reference_f, adj_matrix, stiffness, mass, output_f in test_data:
+                #adj_matrix = adj_matrix[:,:,:8]
+                start = time.perf_counter()
                 output_pred = net(constraint[0,:], dynamic_f, reference_f, adj_matrix[0,:,:], stiffness, mass)
+                end = time.perf_counter()
+                #print(end-start)
                 if(torch.cuda.is_available()):
                     output_f = output_f.cuda()
                 loss = net.compute_graph_loss(output_pred, output_f, constraint[0, :])
