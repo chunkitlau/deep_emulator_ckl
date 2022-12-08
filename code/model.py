@@ -16,8 +16,6 @@ class Graph_MLP(nn.Module):
             nn.Linear(128, 128),
             nn.Tanh(),
             nn.Linear(128, 128),
-            nn.Tanh(),
-            nn.Linear(128, 128),
         )
 
         # mlp alpha
@@ -28,15 +26,11 @@ class Graph_MLP(nn.Module):
             nn.Tanh(),
             nn.Linear(64, 64),
             nn.Tanh(),
-            nn.Linear(64, 64),
-            nn.Tanh(),
             nn.Linear(64, 64)
         )
 
         # mlp gamma
         self.instance_mlp = nn.Sequential(
-            nn.Linear(192, 192),
-            nn.Tanh(),
             nn.Linear(192, 192),
             nn.Tanh(),
             nn.Linear(192, 192),

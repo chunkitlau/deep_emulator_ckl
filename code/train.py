@@ -62,23 +62,28 @@ def train(net, writer, batch=48, train_seq_num = 10, test_seq_num = 10, total_it
             print ("   training loss:" + str(train_loss))
 
         ##prepare test data
+        #print("# prepare test data --- ", time.perf_counter())
         test_loss = 0.0
         test_loss_num = 1
         test_data_path_root = os.path.join(data_path_root, "test")
         test_files = sorted([f for f in listdir(test_data_path_root) if f.startswith("motion_")])
         shuffle(test_files)
+        #print("# for test_file in test_files --- ", time.perf_counter())
         for test_file in test_files:
             mesh_path_root = os.path.join(test_data_path_root, test_file)
             print(mesh_path_root)
             frame_num = len([f for f in listdir(mesh_path_root+"/1/") if f.startswith("x_")]) - 1
             mesh_dataset_test = data_loader.Mesh_Dataset(mesh_path_root, test_seq_num, frame_num)
             test_data = DataLoader(mesh_dataset_test, batch_size = 12, shuffle = True, num_workers = 2)
+            #print("# for constraint, dynamic_f, reference_f, adj_matrix, stiffness, mass, output_f in test_data --- ", time.perf_counter())
             for constraint, dynamic_f, reference_f, adj_matrix, stiffness, mass, output_f in test_data:
                 #adj_matrix = adj_matrix[:,:,:8]
                 start = time.perf_counter()
+                #print("# output_pred = net(constraint[0,:], dynamic_f, reference_f, adj_matrix[0,:,:], stiffness, mass) --- ", time.perf_counter())
                 output_pred = net(constraint[0,:], dynamic_f, reference_f, adj_matrix[0,:,:], stiffness, mass)
+                #print("# finish output_pred --- ", time.perf_counter())
                 end = time.perf_counter()
-                #print(end-start)
+                #print("# output_pred --- ",end-start)
                 if(torch.cuda.is_available()):
                     output_f = output_f.cuda()
                 loss = net.compute_graph_loss(output_pred, output_f, constraint[0, :])

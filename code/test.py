@@ -155,7 +155,7 @@ def predict_rollout(net, frame_num, mesh_path_root, data_path_root, eval_path_ro
 
 character_name = "michelle"
 motion_name = "cross_jumps"
-weight_path = "./weight/example.weight" 
+weight_path = "./weight/remove_3layer_test.weight" 
 mesh_path_root = "../data/character_dataset/"
 eval_path_root = "./weight/eval/"
 camera_set = [6.0, 2.0, 5.0, 0.3]
@@ -167,4 +167,4 @@ eval_path = os.path.join(eval_path_root, character_name, motion_name)
 
 net = Graph_MLP()
 net.load_state_dict(torch.load(weight_path))
-predict_rollout(net, frame_num = frames, mesh_path_root = mesh_path, data_path_root = input_path, eval_path_root = eval_path, flag = "surface", character_name = character_name, camera_set = camera_set)
+predict_rollout(net, frame_num = frames, mesh_path_root = mesh_path, data_path_root = input_path, eval_path_root = eval_path, flag = "tet", character_name = character_name, camera_set = camera_set)
